@@ -4,7 +4,7 @@ Tested on HomePod (Check other devices)
 
 Send **all the audio from your Windows PC** to a **HomePod** using **AirPlay 2** over Wi-Fi, with a small windowed application.
 
-##Requirements
+## Requirements
 
 - Windows 10/11
 - PC and HomePod on the **same Wi-Fi network** (not a guest network or isolated VLAN)
