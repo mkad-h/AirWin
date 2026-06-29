@@ -1,15 +1,7 @@
-# HomePod Streamer
+# AirWin Streamer
 
 Envía **todo el audio de tu PC con Windows** a un **HomePod** usando **AirPlay 2**
 sobre WiFi, con una pequeña app de ventana.
-
-## ⚠️ Por qué NO es por Bluetooth
-
-El HomePod **no admite audio por Bluetooth**. No es una limitación de este programa
-ni de las otras herramientas que probaste: **Apple deshabilita a propósito** el audio
-Bluetooth (A2DP) en el HomePod. El chip Bluetooth solo se usa para la configuración
-inicial por proximidad. **La única forma de enviarle audio es AirPlay sobre WiFi**, y
-eso es exactamente lo que hace esta app.
 
 ## Requisitos
 
@@ -41,7 +33,7 @@ calidad es el del propio AirPlay: **calidad CD (44100 Hz / 16-bit)**.
 ## Instalación
 
 ```powershell
-cd C:\Users\8200\Documents\HomepodBlue
+cd C:\..\AirWin
 python -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
 ```
@@ -72,32 +64,12 @@ audio completo. Al detener (o cerrar la app) se restaura el estado de mute origi
 AirPlay añade **~2 segundos** de retardo por diseño (Apple bufferiza para sincronizar
 multi-room). Resultado:
 
-- 🎵 **Música / podcasts:** perfecto.
-- 🎬 **Vídeo / juegos:** el audio irá ~2 s por detrás de la imagen. Es del protocolo
+-  **Música / podcasts:** perfecto.
+-  **Vídeo / juegos:** el audio irá ~2 s por detrás de la imagen. Es del protocolo
   AirPlay, no del programa; no se puede eliminar.
 
-## Solución de problemas
-
-- **No aparece el HomePod:** confirma que está encendido y en la misma red WiFi que el
-  PC. Algunos routers aíslan los dispositivos entre sí ("AP isolation"/red de invitados):
-  desactívalo.
-- **Conecta pero no suena:** asegúrate de que realmente esté reproduciéndose algo en el
-  PC (el loopback solo captura cuando hay audio) y sube el volumen del HomePod.
-- **Pide emparejamiento / da error de autenticación:** algunos HomePod configurados con
-  "Permitir el control" restringido requieren emparejar. Avísame y añadimos el flujo de
-  emparejamiento (`atvremote pair`).
 
 ## Pila técnica
 
 `pyatv` (AirPlay 2 / RAOP) · `PyAudioWPatch` (WASAPI loopback) · `pycaw` (mute del PC) ·
 `customtkinter` (GUI). Todo software libre y gratuito.
-
-## Notas de la versión final
-
-- **Audio sin pérdida (calidad CD):** se envía PCM/WAV en vivo en lugar de MP3, así que
-  no hay artefactos de compresión. El límite lo pone AirPlay (44100 Hz / 16-bit).
-- **El audio sale solo por el HomePod:** la app mutea la salida del PC mientras transmite
-  (casilla activable) y la restaura al detener.
-- **Fiabilidad tras varios usos:** se espera el cierre completo de la sesión RAOP
-  (`atv.close()` devuelve tareas que hay que aguardar) y se libera el dispositivo de
-  captura entre transmisiones, para poder iniciar/detener muchas veces sin que se degrade.
