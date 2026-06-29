@@ -1,36 +1,17 @@
 # AirWin Streamer
 
-Envía **todo el audio de tu PC con Windows** a un **HomePod** usando **AirPlay 2**
-sobre WiFi, con una pequeña app de ventana.
+Tested on HomePod (Check other devices)
 
-## Requisitos
+Send **all the audio from your Windows PC** to a **HomePod** using **AirPlay 2** over Wi-Fi, with a small windowed application.
+
+##Requirements
 
 - Windows 10/11
-- El PC y el HomePod en la **misma red WiFi** (no una red de invitados ni VLAN aislada)
-- Python 3.10+ (probado con 3.12)
+- PC and HomePod on the **same Wi-Fi network** (not a guest network or isolated VLAN)
+- Python 3.10+ (tested with 3.12)
 
-## Cómo funciona
 
-```
-Altavoz por defecto de Windows
-      │ (WASAPI loopback — sin "Stereo Mix" ni cables virtuales)
-   PyAudioWPatch  ──PCM sin pérdida──▶  WAV de streaming en vivo
-                                    │
-                              asyncio.StreamReader
-                                    │
-                        pyatv  ──AirPlay 2 / RAOP (ALAC)──▶  HomePod
-```
-
-El audio viaja **sin pérdida** de extremo a extremo: se captura como PCM, se envía como
-WAV en vivo y pyatv lo reempaqueta a ALAC (sin pérdida) hacia el HomePod. El techo de
-calidad es el del propio AirPlay: **calidad CD (44100 Hz / 16-bit)**.
-
-- `audio_capture.py` — captura el audio del sistema como PCM/WAV sin pérdida.
-- `airplay_engine.py` — descubre dispositivos y transmite con `pyatv`.
-- `system_audio.py` — mutea/restaura la salida del PC.
-- `main.py` — la interfaz gráfica.
-
-## Instalación
+## Process
 
 ```powershell
 cd C:\..\AirWin
@@ -38,38 +19,30 @@ python -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
 ```
 
-## Uso
+## Use
 
-Doble clic en **`HomePod Streamer.bat`**, o bien:
+Double click in **`HomePod Streamer.bat`**, or:
 
 ```powershell
 .\.venv\Scripts\python main.py
 ```
 
-1. La app escanea automáticamente al abrir. Pulsa **🔄 Buscar** si tu HomePod no aparece.
-2. Elige el HomePod en la lista.
-3. Deja marcada **«Silenciar PC (solo HomePod)»** para que el audio salga *únicamente*
-   por el HomePod y no por los altavoces del PC. Si la desmarcas, sonará por ambos.
-4. Pulsa **▶ Iniciar transmisión**. Ahora todo lo que suene en el PC irá al HomePod.
-5. Ajusta el **volumen** del HomePod con el deslizador.
-6. **■ Detener** para terminar (restaura automáticamente el sonido del PC).
+1. The app automatically scans when you open it. Tap **🔄 Search** if your HomePod doesn't appear.
+2. Select your HomePod from the list.
+3. Leave **"Mute PC (HomePod only)"** checked so that the audio comes *only* through the HomePod and not the PC speakers. If you uncheck it, it will play through both.
+4. Tap **▶ Start Streaming**. Now everything playing on your PC will go to your HomePod.
+5. Adjust the HomePod's **volume** using the slider.
+6. Tap **■ Stop** to finish (this automatically restores the PC's sound).
 
-### ¿Cómo suena solo por el HomePod?
-Windows captura el audio en el "loopback" *antes* de aplicar el mute del dispositivo,
-así que la app puede **mutear tus altavoces** mientras el HomePod sigue recibiendo el
-audio completo. Al detener (o cerrar la app) se restaura el estado de mute original.
+## Latency (important)
 
-## Latencia (importante)
+AirPlay adds approximately 2 seconds of latency by design (Apple buffers to sync multi-room audio). Result:
 
-AirPlay añade **~2 segundos** de retardo por diseño (Apple bufferiza para sincronizar
-multi-room). Resultado:
+- Music/podcasts: perfect.
 
--  **Música / podcasts:** perfecto.
--  **Vídeo / juegos:** el audio irá ~2 s por detrás de la imagen. Es del protocolo
-  AirPlay, no del programa; no se puede eliminar.
+- Video/games: audio will lag approximately 2 seconds behind the video. This is due to the AirPlay protocol, not the software; it cannot be eliminated.
 
-
-## Pila técnica
+## Technical Stack
 
 `pyatv` (AirPlay 2 / RAOP) · `PyAudioWPatch` (WASAPI loopback) · `pycaw` (mute del PC) ·
 `customtkinter` (GUI). Todo software libre y gratuito.
